@@ -108,6 +108,7 @@ def login(request):
         }, encoder=DjangoJSONEncoder)
 
     if utils.hashPassword(this_password, user_obj.salt) == user_obj.hashed_password:
+        user_obj.is_logedin = True
         return JsonResponse({
             'status': 'ok',
             'message': 'user loged in'
