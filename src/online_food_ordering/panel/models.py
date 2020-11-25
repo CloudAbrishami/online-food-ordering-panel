@@ -4,20 +4,15 @@ from django.utils.crypto import get_random_string
 
 class User(models.Model):
     id               =  models.AutoField(primary_key=True)
-    username         =  models.CharField(max_length=255, default=None)   # make sure that no other user is available with the same username
-    email            =  models.EmailField(default=None)
-    salt             =  models.CharField(max_length=128, default=None)
-    hashed_password  =  models.CharField(max_length=400, default=None)
-    phone_number     =  models.BigIntegerField(default=None)
+    username         =  models.CharField(max_length=255, default=None, blank=True)   # make sure that no other user is available with the same username
+    email            =  models.EmailField(default=None, blank=True)
+    salt             =  models.CharField(max_length=128, default=None, blank=True)
+    hashed_password  =  models.CharField(max_length=400, default=None, blank=True)
+    # phone_number     =  models.BigIntegerField(blank=True)
     user_type        =  models.IntegerField(default=0)  # 0: guest | 1: restaurant | 2: normal users |
-    token            =  models.CharField(max_length=32)
+    token            =  models.CharField(max_length=32, blank=True)
     is_logedin       =  models.BooleanField(default=False)
 
-    def __init__(self, *args, **kwargs):
-        self.token = get_random_string(length=32)
-
-        if self.user_type == 1:
-            self.restaurant = Restaurant(user=self)
 
     def __str__(self):
         if self.username != None:
@@ -36,6 +31,11 @@ class Food(models.Model):
     def __str__(self):
         return self.name
   
+class Menu(models.Model):
+    id      =   models.AutoField(primary_key=True)
+    name    =   models.CharField(max_length=100)
+    foods   =   models.ManyToManyField(Food)
+
 
 class Order(models.Model):
     foods       = models.ManyToManyField(Food)
@@ -48,5 +48,5 @@ class Order(models.Model):
 
 class Restaurant(models.Model):
     user    =   models.OneToOneField(User, unique=True, on_delete=models.CASCADE)
-    menus   =   models.ManyToManyField(Food)
+    menus   =   models.ManyToManyField(Food, blank=True, default=None)
     orders  =   models.ManyToManyField(Order, blank=True)
