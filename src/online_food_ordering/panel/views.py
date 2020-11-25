@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 
 from . import models, utils
-from .models import Guest, Restaurant, User, Food
+from .models import Guest, Restaurant, User, Food, Menu
 
 import json
 
@@ -270,3 +270,69 @@ def add_food(request):
 
     
 
+@csrf_exempt
+def add_to_menu(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'restaurant tokon not specified'
+        }, encoder=DjangoJSONEncoder)        
+
+    if 'menu_id' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'menu id not specified'
+        }, encoder=DjangoJSONEncoder)
+    
+    if 'food_id' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'food id not specified'
+        }, encoder=DjangoJSONEncoder)
+
+    rest_token = request.POST['token']
+    menu_id = request.POST['menu_id']
+    food_id = request.POST['food_id']
+
+    if Restaurant.objects.filter(token=rest_token).count() != 0:
+        rest_obj = Restaurant.objects.get(token=rest_token)
+        menu_obj = Menu.objects.get(id=menu_id)
+        food_obj = Food.objects.get(foodID=food_id)
+        menu_obj.foods.add(food_obj)
+        menu_obj.save()
+
+        return JsonResponse({
+            'status': 'OK', 
+            'message': 'food added successfuly to the menu'
+        }, encoder=DjangoJSONEncoder)
+        
+
+@csrf_exempt
+def add_menu(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message':'restaurant token not specified'
+        }, encoder=DjangoJSONEncoder)
+
+    if 'name' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message':'menu name not specified'
+        }, encoder=DjangoJSONEncoder)
+
+    rest_token = request.POST['token']
+    menu_name = request.POST['name']
+
+    if Restaurant.objects.filter(token=rest_token).count() != 0:
+        rest_obj = Restaurant.objects.get(token=rest_token)
+        menu_obj = Menu(name=menu_name, rest_token=rest_token)
+        menu_obj.save()
+
+        return JsonResponse({
+            'status': 'OK', 
+            'message': 'Menu created successfully'
+
+        }, encoder=DjangoJSONEncoder)
+
+    

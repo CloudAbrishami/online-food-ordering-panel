@@ -39,8 +39,11 @@ class Food(models.Model):
 class Menu(models.Model):
     id      =   models.AutoField(primary_key=True)
     name    =   models.CharField(max_length=100)
-    foods   =   models.ManyToManyField(Food)
+    foods   =   models.ManyToManyField(Food, default=None)
+    rest_token  = models.CharField(max_length=32, default='')
 
+    def __str__(self):
+        return self.name
 
 class Order(models.Model):
     foods       = models.ManyToManyField(Food)
