@@ -16,8 +16,8 @@ class UserForm(admin.ModelAdmin):
 
 
 class RestaurantForm(admin.ModelAdmin):
-    list_display = ['user', 'show_menues', 'show_orders']
-    readonly_fields = ['user', 'menus', 'orders']
+    list_display = ['user', 'is_open','token']
+    readonly_fields = ['user','token', 'is_open', 'menus', 'orders']
 
     def show_menues(self, obj):
         return "\n-".join([m.name for m in obj.menus.all()])

@@ -336,3 +336,72 @@ def add_menu(request):
         }, encoder=DjangoJSONEncoder)
 
     
+@csrf_exempt
+def close_restaurant(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message':'restaurant token not specified'
+        }, encoder=DjangoJSONEncoder)
+    
+    token = request.POST['token']
+
+    if Restaurant.objects.filter(token=token).count() != 0:
+        rest_obj = Restaurant.objects.get(token=token)
+        rest_obj.is_open = False
+        rest_obj.save()
+
+        return JsonResponse({
+            'status': 'OK', 
+            'message': 'restaurant closed successfully'
+
+        }, encoder=DjangoJSONEncoder)
+
+
+@csrf_exempt
+def open_restaurant(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message':'restaurant token not specified'
+        }, encoder=DjangoJSONEncoder)
+    
+    token = request.POST['token']
+
+    if Restaurant.objects.filter(token=token).count() != 0:
+        rest_obj = Restaurant.objects.get(token=token)
+        rest_obj.is_open = True
+        rest_obj.save()
+
+        return JsonResponse({
+            'status': 'OK', 
+            'message': 'restaurant opened successfully'
+
+        }, encoder=DjangoJSONEncoder)
+
+
+@csrf_exempt
+def restaurant_status(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message':'restaurant token not specified'
+        }, encoder=DjangoJSONEncoder)
+    
+    token = request.POST['token']
+
+    if Restaurant.objects.filter(token=token).count() != 0:
+        rest_obj = Restaurant.objects.get(token=token)
+
+        if rest_obj.is_open:
+            return JsonResponse({
+                'status': 'OK', 
+                'message': 'restaurant is open'
+
+            }, encoder=DjangoJSONEncoder)
+        else:
+            return JsonResponse({
+                'status': 'OK', 
+                'message': 'restaurant is closed'
+
+            }, encoder=DjangoJSONEncoder)

@@ -48,6 +48,7 @@ class Menu(models.Model):
 class Order(models.Model):
     foods       = models.ManyToManyField(Food)
     total_price = models.FloatField(default=None)
+    isAccepted  = models.BooleanField(default=True)
 
     def calcute_price(self):
         pass
@@ -58,4 +59,5 @@ class Restaurant(models.Model):
     user    =   models.OneToOneField(User, unique=True, on_delete=models.CASCADE)
     menus   =   models.ManyToManyField(Food, blank=True, default=None)
     orders  =   models.ManyToManyField(Order, blank=True)
+    is_open =   models.BooleanField(default=True)
     token   =   models.CharField(max_length=32, blank=True)
