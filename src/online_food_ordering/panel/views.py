@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.core.serializers.json import DjangoJSONEncoder
 
 from . import models, utils
-from .models import User, Restaurant
+from .models import User, Restaurant, Guest
 # Create your views here.
 
 
@@ -162,4 +162,41 @@ def logout(request):
     return JsonResponse({
         'status': 'OK',
         'message': 'user loged out'
+    }, encoder=DjangoJSONEncoder)
+
+
+
+@csrf_exempt
+def enter(request):
+    token = get_random_string(length=32)
+
+    while User.objects.filter(token=token).count() != 0 and Guest.objects.filter(token=token).count() != 0:
+        token = get_random_string(length=32)
+
+    guest = Guest(token=token)
+    guest.save()
+
+    return JsonResponse({
+        'status': 'OK',
+        'message': f"""this user entered successfully as a guest - token: {token}"""
+    }, encoder=DjangoJSONEncoder)
+
+
+
+@csrf_exempt
+def exit(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+        'status': 'Error',
+        'message': 'guest not specified'
+    }, encoder=DjangoJSONEncoder)
+    
+    token = request.POST['token']
+
+    geust_obj = Guest.objects.get(token=token)
+    geust_obj.delete()
+
+    return JsonResponse({
+        'status': 'OK',
+        'message': 'guest successfully exited from the app'
     }, encoder=DjangoJSONEncoder)

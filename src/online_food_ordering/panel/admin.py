@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Restaurant
+from .models import User, Restaurant, Guest
 from django import forms
 
 # Register your models here.
@@ -26,5 +26,10 @@ class RestaurantForm(admin.ModelAdmin):
     def show_orders(self, obj):
         return "\n-".join([o.user for o in obj.orders.all()])
 
+
+class GuestForm(admin.ModelAdmin):
+    list_display = ['token']
+
 admin.site.register(User, UserForm)
 admin.site.register(Restaurant, RestaurantForm)
+admin.site.register(Guest, GuestForm)
