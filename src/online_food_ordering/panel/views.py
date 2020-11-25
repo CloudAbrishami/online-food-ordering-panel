@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 
 from . import models, utils
-from .models import Guest, Restaurant, User
+from .models import Guest, Restaurant, User, Food
 
 import json
 
@@ -214,3 +214,59 @@ def get_restaurants(request):
         resp[f'{rest.user.username}'] = rest.token
 
     return JsonResponse(resp, encoder=DjangoJSONEncoder)
+
+
+@csrf_exempt
+def get_menu(request):
+    if 'token' not in request.POST.keys():
+        return JsonResponse({
+        'status': 'Error',
+        'message': 'restaurant has not been specified'
+    }, encoder=DjangoJSONEncoder)
+
+    token = request.POST['token']
+
+    rest_obj = Restaurant.objects.get(token=token)
+    menus = rest_obj.menus.all()
+    
+    menus_dic = {}
+
+    for m in menus:
+        foods = {}
+        for f in m.foods.all():
+            foods[f.name] = f.price
+        menus_dic[f'{m.name}'] = foods
+
+    return JsonResponse(menus_dic, encoder=DjangoJSONEncoder)
+
+
+@csrf_exempt
+def add_food(request):
+    if 'name' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'food name field is empty'
+        }, encoder=DjangoJSONEncoder)
+
+    if 'price' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'food price field is empty'
+        }, encoder=DjangoJSONEncoder)
+
+    if 'availablity' in request.POST.keys():
+        availablity = int(request.POST["availablity"])
+
+    name  = request.POST['name']
+    price = request.POST['price']
+
+    food_obj = Food(name=name, price=price, availablity=availablity)
+    food_obj.save()
+
+    return JsonResponse({
+        'status': 'OK', 
+        'message': 'Food successfully added'
+    }, encoder=DjangoJSONEncoder)
+
+    
+

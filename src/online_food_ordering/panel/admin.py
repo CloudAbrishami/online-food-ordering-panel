@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Restaurant, Guest
+from .models import User, Restaurant, Guest, Food
 from django import forms
 
 # Register your models here.
@@ -30,6 +30,17 @@ class RestaurantForm(admin.ModelAdmin):
 class GuestForm(admin.ModelAdmin):
     list_display = ['token']
 
+class FoodForm(admin.ModelAdmin):
+    list_display = ['name', 'price', 'availablity']
+    readonly_fields = ['name']
+
+    # def get_readonly_fields(self, request, obj=None):
+    #     if obj:
+    #         self.readonly_fields += ('price', 'availablity')
+    #     return self.readonly_fields
+
+
 admin.site.register(User, UserForm)
 admin.site.register(Restaurant, RestaurantForm)
 admin.site.register(Guest, GuestForm)
+admin.site.register(Food, FoodForm)
