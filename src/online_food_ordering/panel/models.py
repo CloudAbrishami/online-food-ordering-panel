@@ -27,7 +27,6 @@ class Guest(models.Model):
     )   
 
 
-
 class Food(models.Model):
     foodID      =   models.AutoField(primary_key=True)
     name        =   models.CharField(max_length=255)
@@ -56,3 +55,4 @@ class Restaurant(models.Model):
     user    =   models.OneToOneField(User, unique=True, on_delete=models.CASCADE)
     menus   =   models.ManyToManyField(Food, blank=True, default=None)
     orders  =   models.ManyToManyField(Order, blank=True)
+    token   =   models.CharField(max_length=32, blank=True)

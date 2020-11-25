@@ -1,14 +1,15 @@
-from django.shortcuts import render
-from django.utils.crypto import get_random_string, hashlib
-
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.utils.crypto import get_random_string, hashlib
+from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 
 from . import models, utils
-from .models import User, Restaurant, Guest
+from .models import Guest, Restaurant, User
+
+import json
+
 # Create your views here.
 
 
@@ -85,6 +86,7 @@ def register_user(request):
 
     if user_type == 1:
         restaurant = Restaurant(user=new_user)
+        restaurant.token = new_user.token
         restaurant.save()
 
     return JsonResponse({
@@ -200,3 +202,15 @@ def exit(request):
         'status': 'OK',
         'message': 'guest successfully exited from the app'
     }, encoder=DjangoJSONEncoder)
+
+
+@csrf_exempt
+def get_restaurants(request):
+    restaurants = Restaurant.objects.all()
+
+    resp = {}
+
+    for rest in restaurants:
+        resp[f'{rest.user.username}'] = rest.token
+
+    return JsonResponse(resp, encoder=DjangoJSONEncoder)
