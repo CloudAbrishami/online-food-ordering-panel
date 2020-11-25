@@ -8,3 +8,5 @@ cd online_food_ordering
 python manage.py runserver
 ```
 It is better to run this Django application on port 8000. This is because APIs,which are prepared run on this port. By default, this app runs on port 8000.
+
+Prepared APIs are available at API directory at the root directory.
