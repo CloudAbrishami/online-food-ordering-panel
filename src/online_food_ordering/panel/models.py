@@ -9,7 +9,7 @@ class User(models.Model):
     salt             =  models.CharField(max_length=128, default=None, blank=True)
     hashed_password  =  models.CharField(max_length=400, default=None, blank=True)
     # phone_number     =  models.BigIntegerField(blank=True)
-    user_type        =  models.IntegerField(default=0)  # 0: guest | 1: restaurant | 2: normal users |
+    user_type        =  models.IntegerField(default=0)  # 0: guest | 1: restaurant | 2: normal
     token            =  models.CharField(max_length=32, blank=True)
     is_logedin       =  models.BooleanField(default=False)
 

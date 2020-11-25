@@ -18,19 +18,43 @@ def register_user(request):
 
     if 'username' in request.POST.keys():
         this_username = request.POST['username']
+    else:
+        return JsonResponse({
+        'status' : 'Error',
+        'message' : 'username did not specified'
+    }, encoder=DjangoJSONEncoder)
+
 
     if 'email' in request.POST.keys():
         email = request.POST['email']
+    else:
+        return JsonResponse({
+        'status' : 'Error',
+        'message' : 'email did not specified'
+    }, encoder=DjangoJSONEncoder)
+
 
 
     if 'password' in request.POST.keys():
         password = request.POST['password']
         salt = get_random_string(length=16)
         hashed_password = utils.hashPassword(password, salt)
+    else:
+        return JsonResponse({
+        'status' : 'Error',
+        'message' : 'password did not specified'
+    }, encoder=DjangoJSONEncoder)
+
 
     # define what type is the user
-    if 'user_type' in request.POST.keys():
-        user_type = int(request.POST['user_type'])
+    if 'type' in request.POST.keys():
+        user_type = int(request.POST['type'])
+    else:
+        return JsonResponse({
+        'status' : 'Error',
+        'message' : 'User type did not specified'
+    }, encoder=DjangoJSONEncoder)
+
     
 
     # Duplicate username error: another user already has chosen this username 
@@ -85,13 +109,16 @@ def login(request):
             'message': 'password field is empty'
         }, encoder=DjangoJSONEncoder)
 
-    if 'user_type' in request.POST.keys() and request.POST['user_type'] != '':
-        user_type = request.POST['user_type']
-    else:
-        user_type = 1
+    if 'type' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'user type field is empty'
+        }, encoder=DjangoJSONEncoder)
+
 
     this_username = request.POST['username']
     this_password = request.POST['password']
+    user_type     = request.POST['type']
 
     if User.objects.filter(username=this_username).count() == 0:
         return JsonResponse({
@@ -118,3 +145,21 @@ def login(request):
             'status': 'Error',
             'message': 'wrong password'
         }, encoder=DjangoJSONEncoder)
+
+
+@csrf_exempt
+def logout(request):
+    if 'username' not in request.POST.keys():
+        return JsonResponse({
+            'status': 'Error',
+            'message': 'user did not specified'
+        }, encoder=DjangoJSONEncoder)
+    
+    user_obj = User.objects.get(username=request.POST['username'])
+    user_obj.is_logedin = False
+    user_obj.save()
+
+    return JsonResponse({
+        'status': 'OK',
+        'message': 'user loged out'
+    }, encoder=DjangoJSONEncoder)
