@@ -13,6 +13,6 @@ Prepared APIs are available at API directory at the root directory.
 
 ### Github link:
     https://github.com/CloudAbrishami
-   
-This code is part of a university assignment and extremely needs to be cleaned.
+This code is part of a university assignment and I did not use clean coding methods in it so it's extremely hard to read :)). 
+\\
 Notice that this code is not completed yet.
